@@ -4,7 +4,13 @@ import * as config from "./knexfile";
 import { Model, ValidationError } from "objection";
 import { Cars, CarsModel } from "./models/car";
 import { setAvailableat } from "./function/availableAt";
-import { type } from "os";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: "dwy823csd",
+  api_key: "997985659283223",
+  api_secret: "rEUA993WB94SDSZhKKG6jurbJqo",
+});
 
 const PORT: number = 3000;
 
@@ -23,37 +29,36 @@ app.get("/favicon.ico", (_: Request, res: Response) => {
   res.status(204);
 });
 
-app.get("/", async (req: Request, res: Response) => {
-  // const cars = await CarsModel.query();'
-  // req.params;
+app.get("/", (_: Request, res: Response) => {
+  res.render("index");
+});
+app.get("/cars", async (req: Request, res: Response) => {
   let cars: object = [];
   if (
-    req.query.driver == undefined &&
-    req.query.tanggal == undefined &&
-    req.query.waktu == undefined
+    req.query.driver != undefined &&
+    req.query.tanggal != undefined &&
+    req.query.waktu != undefined
   ) {
-  } else {
-    const dt: Date = new Date(req.query.tanggal!.toString());
-    dt.setHours(parseInt(req.query.waktu!.toString()), 0, 0, 0);
-    const jumlah: number = req.query.jumlah!.toString()
-      ? parseInt(req.query.jumlah!.toString())
+    const dt: Date = new Date(req.query.tanggal.toString());
+    dt.setHours(parseInt(req.query.waktu.toString()), 0, 0, 0);
+    const jumlah: number = req.query.jumlah
+      ? parseInt(req.query.jumlah.toString())
       : 0;
     cars = await CarsModel.query()
-      .where("driver", req.query.driver!.toString())
-      .where("availableAt", ">=", dt)
+      .where("driver", req.query.driver.toString())
+      .where("availableAt", "<=", dt)
       .where("capacity", ">=", jumlah);
   }
-  res.render("index", { cars });
+
+  res.render("cars", { cars });
 });
 
-// app.use("/");
-
-app.get("/:id", async (req: Request, res: Response) => {
+app.get("/cars/:id", async (req: Request, res: Response) => {
   const cars = await CarsModel.query().findById(req.params.id);
   res.send(cars);
 });
 
-app.post("/", async (req: Request<{}, {}, Cars, {}>, res: Response) => {
+app.post("/cars", async (req: Request<{}, {}, Cars, {}>, res: Response) => {
   try {
     const body = {
       ...req.body,
@@ -73,7 +78,7 @@ app.post("/", async (req: Request<{}, {}, Cars, {}>, res: Response) => {
   }
 });
 
-app.patch("/:id", async (req: Request, res: Response) => {
+app.patch("/cars/:id", async (req: Request, res: Response) => {
   const body = {
     ...req.body,
     specs: JSON.stringify(req.body.specs),
@@ -86,7 +91,7 @@ app.patch("/:id", async (req: Request, res: Response) => {
   res.status(200).json(car);
 });
 
-app.delete("/:id", async (req: Request, res: Response) => {
+app.delete("/cars/:id", async (req: Request, res: Response) => {
   const car = await CarsModel.query().deleteById(req.params.id);
   res.status(200).json(car);
 });

@@ -41,6 +41,12 @@ const config = __importStar(require("./knexfile"));
 const objection_1 = require("objection");
 const car_1 = require("./models/car");
 const availableAt_1 = require("./function/availableAt");
+const cloudinary_1 = require("cloudinary");
+cloudinary_1.v2.config({
+    cloud_name: "dwy823csd",
+    api_key: "997985659283223",
+    api_secret: "rEUA993WB94SDSZhKKG6jurbJqo",
+});
 const PORT = 3000;
 const app = (0, express_1.default)();
 const ENV = "development";
@@ -53,33 +59,31 @@ app.use(express_1.default.json());
 app.get("/favicon.ico", (_, res) => {
     res.status(204);
 });
-app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const cars = await CarsModel.query();'
-    // req.params;
+app.get("/", (_, res) => {
+    res.render("index");
+});
+app.get("/cars", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let cars = [];
-    if (req.query.driver == undefined &&
-        req.query.tanggal == undefined &&
-        req.query.waktu == undefined) {
-    }
-    else {
+    if (req.query.driver != undefined &&
+        req.query.tanggal != undefined &&
+        req.query.waktu != undefined) {
         const dt = new Date(req.query.tanggal.toString());
         dt.setHours(parseInt(req.query.waktu.toString()), 0, 0, 0);
-        const jumlah = req.query.jumlah.toString()
+        const jumlah = req.query.jumlah
             ? parseInt(req.query.jumlah.toString())
             : 0;
         cars = yield car_1.CarsModel.query()
             .where("driver", req.query.driver.toString())
-            .where("availableAt", ">=", dt)
+            .where("availableAt", "<=", dt)
             .where("capacity", ">=", jumlah);
     }
-    res.render("index", { cars });
+    res.render("cars", { cars });
 }));
-// app.use("/");
-app.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/cars/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cars = yield car_1.CarsModel.query().findById(req.params.id);
     res.send(cars);
 }));
-app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/cars", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = Object.assign(Object.assign({}, req.body), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(req.body.specs), options: JSON.stringify(req.body.options) });
         const car = yield car_1.CarsModel.query().insert(body).returning("*");
@@ -93,7 +97,7 @@ app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
 }));
-app.patch("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.patch("/cars/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = Object.assign(Object.assign({}, req.body), { specs: JSON.stringify(req.body.specs), options: JSON.stringify(req.body.options) });
     const car = yield car_1.CarsModel.query()
         .findById(req.params.id)
@@ -101,7 +105,7 @@ app.patch("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .returning("*");
     res.status(200).json(car);
 }));
-app.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/cars/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const car = yield car_1.CarsModel.query().deleteById(req.params.id);
     res.status(200).json(car);
 }));
