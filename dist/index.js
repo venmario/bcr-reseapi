@@ -87,7 +87,7 @@ app.post("/cars", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = Object.assign(Object.assign({}, req.body), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(req.body.specs), options: JSON.stringify(req.body.options) });
         const car = yield car_1.CarsModel.query().insert(body).returning("*");
-        res.send(car);
+        res.status(200).json(car);
     }
     catch (error) {
         if (error instanceof objection_1.ValidationError) {

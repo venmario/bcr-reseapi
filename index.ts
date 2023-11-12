@@ -68,7 +68,7 @@ app.post("/cars", async (req: Request<{}, {}, Cars, {}>, res: Response) => {
       options: JSON.stringify(req.body.options),
     };
     const car = await CarsModel.query().insert(body).returning("*");
-    res.send(car);
+    res.status(200).json(car);
   } catch (error) {
     if (error instanceof ValidationError) {
       res.send({
