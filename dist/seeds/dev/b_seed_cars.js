@@ -20,7 +20,7 @@ function seed(knex) {
         // Inserts seed entries
         // console.log(objCars);
         yield knex("cars").insert(cars.map((car) => {
-            return Object.assign(Object.assign({}, car), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(car.specs), options: JSON.stringify(car.options), created_by: 1 });
+            return Object.assign(Object.assign({}, car), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(car.specs), options: JSON.stringify(car.options), created_at: new Date(), created_by: 1 });
         }));
     });
 }

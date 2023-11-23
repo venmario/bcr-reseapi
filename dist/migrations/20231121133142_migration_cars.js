@@ -31,7 +31,9 @@ function up(knex) {
             table.jsonb("specs").notNullable;
             table.timestamps();
             table.timestamp("deleted_at");
-            table.integer("created_by").references("id").inTable("users");
+            table.integer("created_by").notNullable().references("id").inTable("users");
+            table.integer("updated_by").nullable().references("id").inTable("users");
+            table.integer("deleted_by").nullable().references("id").inTable("users");
         });
     });
 }

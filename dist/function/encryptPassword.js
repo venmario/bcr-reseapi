@@ -8,20 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.seed = void 0;
-const availableAt_1 = require("../../function/availableAt");
-function seed(knex) {
+exports.encryptedPassword = void 0;
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+function encryptedPassword(password, salt) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Deletes ALL existing entries
-        yield knex("cars").del();
-        const response = yield fetch(`https://raw.githubusercontent.com/fnurhidayat/probable-garbanzo/main/data/cars.json`);
-        const cars = yield response.json();
-        // Inserts seed entries
-        // console.log(objCars);
-        yield knex("cars").insert(cars.map((car) => {
-            return Object.assign(Object.assign({}, car), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(car.specs), options: JSON.stringify(car.options), created_by: 1 });
-        }));
+        return yield bcryptjs_1.default.hash(password, salt);
     });
 }
-exports.seed = seed;
+exports.encryptedPassword = encryptedPassword;

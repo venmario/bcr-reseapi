@@ -9,19 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.seed = void 0;
-const availableAt_1 = require("../../function/availableAt");
-function seed(knex) {
+exports.down = exports.up = void 0;
+function up(knex) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Deletes ALL existing entries
-        yield knex("cars").del();
-        const response = yield fetch(`https://raw.githubusercontent.com/fnurhidayat/probable-garbanzo/main/data/cars.json`);
-        const cars = yield response.json();
-        // Inserts seed entries
-        // console.log(objCars);
-        yield knex("cars").insert(cars.map((car) => {
-            return Object.assign(Object.assign({}, car), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(car.specs), options: JSON.stringify(car.options), created_by: 1 });
-        }));
+        return knex.schema.createTable("users", function (table) {
+            table.increments("id").primary();
+            table.string("username", 15).notNullable();
+            table.string("email", 255).notNullable();
+            table.string("password", 255).notNullable();
+            table.string("role", 50).notNullable();
+        });
     });
 }
-exports.seed = seed;
+exports.up = up;
+function down(knex) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return knex.schema.dropTable("users");
+    });
+}
+exports.down = down;

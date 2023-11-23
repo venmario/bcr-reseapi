@@ -19,6 +19,8 @@ export async function seed(knex: Knex): Promise<void> {
         availableAt: setAvailableat(),
         specs: JSON.stringify(car.specs),
         options: JSON.stringify(car.options),
+        created_at: new Date(),
+        created_by: 1,
       };
     })
   );

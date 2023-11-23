@@ -10,18 +10,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seed = void 0;
-const availableAt_1 = require("../../function/availableAt");
+const encryptPassword_1 = require("../../function/encryptPassword");
+const salt = 9;
+const passwordSuperAdmin = "superadmin";
 function seed(knex) {
     return __awaiter(this, void 0, void 0, function* () {
         // Deletes ALL existing entries
-        yield knex("cars").del();
-        const response = yield fetch(`https://raw.githubusercontent.com/fnurhidayat/probable-garbanzo/main/data/cars.json`);
-        const cars = yield response.json();
+        yield knex("users").del();
         // Inserts seed entries
-        // console.log(objCars);
-        yield knex("cars").insert(cars.map((car) => {
-            return Object.assign(Object.assign({}, car), { driver: Math.floor(Math.random() * 2) == 1 ? true : false, availableAt: (0, availableAt_1.setAvailableat)(), specs: JSON.stringify(car.specs), options: JSON.stringify(car.options), created_by: 1 });
-        }));
+        yield knex("users").insert([
+            {
+                username: "superadmin",
+                email: "superadmin@gmail.com",
+                password: yield (0, encryptPassword_1.encryptedPassword)(passwordSuperAdmin, salt),
+                role: "superadmin",
+            },
+        ]);
     });
 }
 exports.seed = seed;
