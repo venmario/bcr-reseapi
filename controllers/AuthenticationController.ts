@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { User, IUser } from "../models/user";
 import bcrypt from "bcryptjs";
 import "dotenv/config";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 export class AuthenticationController {
   app: Express;
 
@@ -64,9 +66,17 @@ export class AuthenticationController {
   };
 
   #createToken = (payload: string | object): string => {
-    const secretKey = process.env.SECRET!;
-    const jam = 1;
+    // const secretKey = process.env.SECRET!;
+    const secretKey = readFileSync(
+      join(__dirname, "..", "..", "ssh-key", "id_rsa"),
+      "utf-8"
+    );
+
+    const jam: number = 1;
     const expired: number = 3600 * jam;
-    return jwt.sign(payload, secretKey, { expiresIn: expired });
+    return jwt.sign(payload, secretKey, {
+      expiresIn: expired,
+      algorithm: "RS256",
+    });
   };
 }

@@ -46,8 +46,8 @@ export class CarsModel extends ModelWithValidator {
       relation: Model.BelongsToOneRelation,
       modelClass: User,
       join: {
-        from: "users.id",
-        to: "cars.created_by",
+        from: "cars.created_by",
+        to: "users.id",
       },
     },
   };

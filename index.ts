@@ -5,6 +5,7 @@ import { Model } from "objection";
 import { v2 as cloudinary } from "cloudinary";
 import { CarController } from "./controllers/CarController";
 import { AuthenticationController } from "./controllers/AuthenticationController";
+import carRoute from "./routes/CarRoute";
 
 cloudinary.config({
   cloud_name: "dwy823csd",
@@ -30,7 +31,8 @@ app.get("/favicon.ico", (_: Request, res: Response) => {
 });
 
 new AuthenticationController(app).init();
-new CarController(app).init();
+
+app.use("/", carRoute);
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);

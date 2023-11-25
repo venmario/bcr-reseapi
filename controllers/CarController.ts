@@ -1,25 +1,26 @@
 import { Express, Request, Response } from "express";
 import { Cars, CarsModel } from "../models/car";
-import { setAvailableat } from "../function/availableAt";
+import { setAvailableat } from "../utils/availableAt";
 import { ValidationError } from "objection";
-import auth, { ValRequest } from "./auth";
+import auth from "../middleware/auth";
+import { CarService } from "../service/CarService";
 export class CarController {
-  app: Express;
+  service: CarService;
 
-  constructor(pApp: Express) {
-    this.app = pApp;
+  constructor() {
+    this.service = new CarService();
   }
 
-  init() {
-    const prefix: string = "cars";
-    this.app.get("/", this.index); //render index page
-    this.app.get(`/${prefix}`, this.rentCar); //render car page
-    this.app.get(`/api/${prefix}`, auth, this.getCars); // api get all cars
-    this.app.get(`/api/${prefix}/:id`, auth, this.getCar);
-    this.app.post(`/api/${prefix}`, auth, this.createCar); // api create new car
-    this.app.patch(`/api/${prefix}/:id`, auth, this.updateCar); //api update a car
-    this.app.delete(`/api/${prefix}/:id`, auth, this.deleteCar); //api delete a car
-  }
+  // init() {
+  //   const prefix: string = "cars";
+  //   this.app.get("/", this.index); //render index page
+  //   this.app.get(`/${prefix}`, this.rentCar); //render car page
+  //   this.app.get(`/api/${prefix}`, auth, this.getCars); // api get all cars
+  //   this.app.get(`/api/${prefix}/:id`, auth, this.getCar);
+  //   this.app.post(`/api/${prefix}`, auth, this.createCar); // api create new car
+  //   this.app.patch(`/api/${prefix}/:id`, auth, this.updateCar); //api update a car
+  //   this.app.delete(`/api/${prefix}/:id`, auth, this.deleteCar); //api delete a car
+  // }
 
   index = (_: Request, res: Response) => {
     res.render("index");
@@ -47,14 +48,13 @@ export class CarController {
   };
 
   getCars = async (_: Request, res: Response) => {
-    const cars = await CarsModel.query();
+    const cars = await this.service.getCars();
+    // .withGraphFetched("users");
     res.send(cars);
   };
 
   getCar = async (req: Request, res: Response) => {
-    const cars = await CarsModel.query()
-      .findById(req.params.id)
-      .whereNull("deleted_at");
+    const cars = await this.service.getCar(Number(req.params.id));
     if (cars) {
       return res.status(200).json(cars);
     }
@@ -65,17 +65,15 @@ export class CarController {
 
   createCar = async (req: Request<{}, {}, Cars, {}>, res: Response) => {
     try {
-      const valRequest = req as ValRequest;
-      const id = valRequest.authUser.id;
+      const id = req.user?.id;
       const body = {
         ...req.body,
         driver: Math.floor(Math.random() * 2) == 1 ? true : false,
-        availableAt: setAvailableat(),
         specs: JSON.stringify(req.body.specs),
         options: JSON.stringify(req.body.options),
         created_by: id,
       };
-      const car = await CarsModel.query().insert(body).returning("*");
+      const car = await this.service.createCar(body as Cars);
       res.status(200).json(car);
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -87,8 +85,7 @@ export class CarController {
   };
 
   updateCar = async (req: Request, res: Response) => {
-    const valRequest = req as ValRequest;
-    const id = valRequest.authUser.id;
+    const id = req.user?.id;
     const body = {
       ...req.body,
       specs: JSON.stringify(req.body.specs),
@@ -96,21 +93,13 @@ export class CarController {
       updated_at: new Date(),
       updated_by: id,
     };
-    const car = await CarsModel.query()
-      .findById(req.params.id)
-      .whereNull("deleted_at")
-      .patch(body)
-      .returning("*");
+    const car = await this.service.updateCar(Number(id), body);
     res.status(200).json(car);
   };
 
   deleteCar = async (req: Request, res: Response) => {
-    const valRequest = req as ValRequest;
-    const id = valRequest.authUser.id;
-    const car = await CarsModel.query().findById(req.params.id).patch({
-      deleted_at: new Date(),
-      deleted_by: id,
-    });
+    const id = req.user?.id;
+    const car = await this.service.deleteCar(Number(id));
     res.status(200).json(car);
   };
 }

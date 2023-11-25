@@ -1,6 +1,6 @@
 import { Knex } from "knex";
-import { CarsModel } from "../../models/car";
-import { setAvailableat } from "../../function/availableAt";
+import { CarsModel } from "../../../models/car";
+import { setAvailableat } from "../../../utils/availableAt";
 export async function seed(knex: Knex): Promise<void> {
   // Deletes ALL existing entries
   await knex("cars").del();

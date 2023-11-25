@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { encryptedPassword } from "../../function/encryptPassword";
+import { encryptedPassword } from "../../../utils/encryptPassword";
 
 const salt: number = 9;
 const passwordSuperAdmin: string = "superadmin";
