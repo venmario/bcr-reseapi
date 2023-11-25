@@ -2,16 +2,9 @@ import express, { Express, Response, Request } from "express";
 import knex from "knex";
 import * as config from "./knexfile";
 import { Model } from "objection";
-import { v2 as cloudinary } from "cloudinary";
-import { CarController } from "./controllers/CarController";
-import { AuthenticationController } from "./controllers/AuthenticationController";
 import carRoute from "./routes/CarRoute";
-
-cloudinary.config({
-  cloud_name: "dwy823csd",
-  api_key: "997985659283223",
-  api_secret: "rEUA993WB94SDSZhKKG6jurbJqo",
-});
+import viewRoute from "./routes/ViewRoute";
+import authRoute from "./routes/AuthRoute";
 
 const PORT: number = 3000;
 
@@ -30,9 +23,9 @@ app.get("/favicon.ico", (_: Request, res: Response) => {
   res.status(204);
 });
 
-new AuthenticationController(app).init();
-
-app.use("/", carRoute);
+app.use(viewRoute);
+app.use(authRoute);
+app.use("/api", carRoute);
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);

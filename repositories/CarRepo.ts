@@ -1,37 +1,19 @@
 import { Cars, CarsModel } from "../models/car";
 
 export default class CarRepository {
-  // index = (_: Request, res: Response){
-  //   res.render("index");
-  // };
-
-  // async rentCar (){
-  //   let cars: object = [];
-  //   if (
-  //     req.query.driver != undefined &&
-  //     req.query.tanggal != undefined &&
-  //     req.query.waktu != undefined
-  //   ) {
-  //     const dt: Date = new Date(req.query.tanggal.toString());
-  //     dt.setHours(parseInt(req.query.waktu.toString()), 0, 0, 0);
-  //     const jumlah: number = req.query.jumlah
-  //       ? parseInt(req.query.jumlah.toString())
-  //       : 0;
-  //     cars = await CarsModel.query()
-  //       .where("driver", req.query.driver.toString())
-  //       .where("availableAt", "<=", dt)
-  //       .where("capacity", ">=", jumlah);
-  //   }
-
-  //   res.render("cars", { cars });
-  // };
+  async rentCar(driver: string, availableAt: Date, jumlah: number) {
+    return await CarsModel.query()
+      .where("driver", driver)
+      .where("availableAt", "<=", availableAt)
+      .where("capacity", ">=", jumlah);
+  }
 
   async getCars() {
     const cars = await CarsModel.query();
     return cars;
   }
 
-  async getCar(id: number) {
+  async getCar(id: string) {
     const cars = await CarsModel.query().findById(id).whereNull("deleted_at");
     return cars;
   }
@@ -41,7 +23,7 @@ export default class CarRepository {
     return car;
   }
 
-  async updateCar(id: number, body: Partial<Cars>) {
+  async updateCar(id: string, body: Partial<Cars>) {
     const car = await CarsModel.query()
       .findById(id)
       .whereNull("deleted_at")
@@ -52,11 +34,13 @@ export default class CarRepository {
     return car;
   }
 
-  async deleteCar(id: number) {
-    const car = await CarsModel.query().findById(id).throwIfNotFound().patch({
-      deleted_at: new Date(),
-      deleted_by: id,
-    });
+  async deleteCar(id: string, body: Partial<Cars>) {
+    const car = await CarsModel.query()
+      .findById(id)
+      .whereNull("deleted_at")
+      .throwIfNotFound()
+      .patch(body)
+      .returning("*");
     return car;
   }
 }
