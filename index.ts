@@ -5,6 +5,8 @@ import { Model } from "objection";
 import carRoute from "./routes/CarRoute";
 import viewRoute from "./routes/ViewRoute";
 import authRoute from "./routes/AuthRoute";
+import UISwaggerExpress from "swagger-ui-express";
+import { swaggerSpec } from "./utils/generate-docs";
 
 const PORT: number = 3000;
 
@@ -19,10 +21,15 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 
-app.get("/favicon.ico", (_: Request, res: Response) => {
-  res.status(204);
-});
-
+app.use("/docs", UISwaggerExpress.serve, UISwaggerExpress.setup(swaggerSpec));
+/**
+ * @openapi
+ * tags:
+ *  -name: Auth
+ *   description: Authentication endpoints
+ *  -name: Cars
+ *   description: Car resource endpoints
+ */
 app.use(viewRoute);
 app.use(authRoute);
 app.use("/api", carRoute);
