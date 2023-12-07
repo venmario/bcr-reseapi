@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthenticationController } from "../controllers/AuthenticationController";
+import auth from "../middleware/auth";
 
 const authController = new AuthenticationController();
 const authRoute = Router();
@@ -48,4 +49,5 @@ const authRoute = Router();
  */
 authRoute.post("/login", authController.login);
 
+authRoute.get("/protected", auth, authController.protected);
 export default authRoute;

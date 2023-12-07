@@ -1,4 +1,5 @@
 import express, { Express, Response, Request } from "express";
+import cors from "cors";
 import knex from "knex";
 import * as config from "./knexfile";
 import { Model } from "objection";
@@ -17,6 +18,7 @@ const knexInstance = knex(config[ENV]);
 
 Model.knex(knexInstance);
 
+app.use(cors());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());

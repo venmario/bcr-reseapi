@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import bcrypt from "bcryptjs";
 import { AuthRepository } from "../repositories/AuthRepo";
+import { NextFunction } from "express";
 
 export class AuthService {
   repository: AuthRepository;
@@ -58,7 +59,7 @@ export class AuthService {
     );
 
     const jam: number = 1;
-    const expired: number = 3600 * jam;
+    const expired: number = 1800 * jam;
     return jwt.sign(payload, secretKey, {
       expiresIn: expired,
       algorithm: "RS256",

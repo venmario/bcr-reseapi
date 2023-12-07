@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IUser } from "../models/user";
 import "dotenv/config";
 import { AuthService } from "../services/AuthService";
@@ -24,5 +24,9 @@ export class AuthenticationController {
         });
       }
     }
+  };
+
+  protected = (_: Request, res: Response) => {
+    return res.status(200).json({ message: "token valid" });
   };
 }

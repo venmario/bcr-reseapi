@@ -28,7 +28,8 @@ export class CarController {
       cars = await this.service.rentCars(driver, dt, jumlah);
     }
 
-    res.render("cars", { cars });
+    // res.render("cars", { cars });
+    res.status(200).json(cars);
   };
 
   getCars = async (_: Request, res: Response) => {
