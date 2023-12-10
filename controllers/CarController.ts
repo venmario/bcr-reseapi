@@ -71,7 +71,7 @@ export class CarController {
       updated_by: userId,
     };
     const result = await errorWrapper(this.service.updateCar(carId, body));
-    res.status(result.status).json(result.status);
+    res.status(result.status).json(result.data);
   };
 
   deleteCar = async (req: Request, res: Response) => {

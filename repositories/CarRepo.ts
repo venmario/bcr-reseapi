@@ -27,7 +27,7 @@ export default class CarRepository {
     const car = await CarsModel.query()
       .findById(id)
       .whereNull("deleted_at")
-      .patch(body)
+      .update(body)
       .throwIfNotFound()
       .returning("*");
 

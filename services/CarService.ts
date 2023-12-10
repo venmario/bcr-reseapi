@@ -1,6 +1,7 @@
 import { Cars } from "../models/car";
 import CarRepository from "../repositories/CarRepo";
-
+import { v2 as cloudinary } from "cloudinary";
+import { setAvailableat } from "../utils/availableAt";
 export class CarService {
   private repository: CarRepository;
 
@@ -21,14 +22,40 @@ export class CarService {
   }
 
   async createCar(body: Cars) {
+    if (body.image) {
+      body = {
+        ...body,
+        image: await this.uploadImage(body.image),
+        availableAt: setAvailableat(),
+      };
+    } else {
+      delete body.image;
+    }
     return await this.repository.createCar(body);
   }
 
   async updateCar(id: string, body: Partial<Cars>) {
+    body = {
+      ...body,
+      image: await this.uploadImage(body.image!),
+    };
     return await this.repository.updateCar(id, body);
   }
 
   async deleteCar(id: string, body: Partial<Cars>) {
     return await this.repository.deleteCar(id, body);
+  }
+
+  async uploadImage(filePath: string): Promise<string> {
+    if (filePath) {
+      const options = {
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
+      };
+      const result = await cloudinary.uploader.upload(filePath, options);
+      return await result.secure_url.toString();
+    }
+    return "";
   }
 }

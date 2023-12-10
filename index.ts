@@ -8,7 +8,12 @@ import viewRoute from "./routes/ViewRoute";
 import authRoute from "./routes/AuthRoute";
 import UISwaggerExpress from "swagger-ui-express";
 import { swaggerSpec } from "./utils/generate-docs";
-
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
+  cloud_name: "dwy823csd",
+  api_key: "997985659283223",
+  api_secret: "rEUA993WB94SDSZhKKG6jurbJqo",
+});
 const PORT: number = 3000;
 
 const app: Express = express();
@@ -21,7 +26,7 @@ Model.knex(knexInstance);
 app.use(cors());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 app.use("/docs", UISwaggerExpress.serve, UISwaggerExpress.setup(swaggerSpec));
 /**

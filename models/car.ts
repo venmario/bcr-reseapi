@@ -6,7 +6,7 @@ export class CarsModel extends ModelWithValidator {
   id!: number;
   plate!: string;
   manufacture!: string;
-  image!: string;
+  image?: string;
   model!: string;
   type!: string;
   description!: string;
@@ -33,10 +33,23 @@ export class CarsModel extends ModelWithValidator {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["plate", "model"],
+      required: [
+        "transmission",
+        "model",
+        "year",
+        "type",
+        "manufacture",
+        "capacity",
+        "image",
+      ],
       properties: {
-        plate: { type: "string", minLength: 5 },
+        transmission: { type: "string", minLength: 1 },
+        capacity: { type: "number", minLength: 1 },
         model: { type: "string", minLength: 1 },
+        type: { type: "string", minLength: 1 },
+        manufacture: { type: "string", minLength: 1 },
+        image: { type: "string" },
+        year: { type: "number", minLength: 4 },
         rentPerDay: { type: "number", minimum: 100_000 },
       },
     };
