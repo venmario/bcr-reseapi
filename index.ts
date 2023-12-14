@@ -9,18 +9,18 @@ import authRoute from "./routes/AuthRoute";
 import UISwaggerExpress from "swagger-ui-express";
 import { swaggerSpec } from "./utils/generate-docs";
 import { v2 as cloudinary } from "cloudinary";
+import { log } from "console";
 cloudinary.config({
   cloud_name: "dwy823csd",
   api_key: "997985659283223",
   api_secret: "rEUA993WB94SDSZhKKG6jurbJqo",
 });
 const PORT: number = 3000;
-
+const hostname = "0.0.0.0";
 const app: Express = express();
-const ENV = "development";
+const ENV = "production";
 //@ts-expect-error
 const knexInstance = knex(config[ENV]);
-
 Model.knex(knexInstance);
 
 app.use(cors());
@@ -41,6 +41,8 @@ app.use(viewRoute);
 app.use(authRoute);
 app.use("/api", carRoute);
 
-app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+app.listen(PORT, hostname, () => {
+  console.log(process.env.DATABASE_URL);
+
+  console.log(`⚡️[server]: Server is running on port ${PORT}`);
 });

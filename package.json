@@ -15,6 +15,7 @@
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.11",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -35,8 +36,20 @@
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
+  "engines": {
+    "node": "18.7.1"
+  },
   "keywords": [],
   "author": "Venansius Mario",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dockerfile": {
+    "dev": true,
+    "packages": {
+      "deploy": [
+        "dnsutils"
+      ]
+    },
+    "cmd": "file"
+  }
 }
