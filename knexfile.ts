@@ -4,8 +4,14 @@ import "dotenv/config";
 
 const config: { [key: string]: Knex.Config } = {
   development: {
-    client: "pg",
-    connection: process.env.DATABASE_URL,
+    client: "postgresql",
+    connection: {
+      host: "localhost",
+      port: 5432,
+      user: "postgres",
+      password: "root",
+      database: "bcr",
+    },
     seeds: {
       directory: "./database/seeds/dev",
     },

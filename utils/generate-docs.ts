@@ -79,7 +79,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:3000",
+      url: "https://bcr-restapi-mario.fly.dev/",
       description: "Development server",
     },
   ],

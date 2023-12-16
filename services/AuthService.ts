@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import bcrypt from "bcryptjs";
 import { AuthRepository } from "../repositories/AuthRepo";
-import { NextFunction } from "express";
 
 export class AuthService {
   repository: AuthRepository;
@@ -52,11 +51,9 @@ export class AuthService {
   };
 
   createToken = (payload: string | object): string => {
-    // const secretKey = process.env.SECRET!;
-    const secretKey = readFileSync(
-      join(__dirname, "..", "..", "ssh-key", "id_rsa"),
-      "utf-8"
-    );
+    const secretKey = process.env.PRIVATE_KEY!;
+    // const filePathDev = join(__dirname, "..", "..", "ssh-key", "id_rsa");
+    // const secretKey = readFileSync(filePathDev, "utf-8");
 
     const jam: number = 1;
     const expired: number = 1800 * jam;

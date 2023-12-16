@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { IUser } from "../models/user";
 import "dotenv/config";
 import { AuthService } from "../services/AuthService";
@@ -11,7 +11,6 @@ export class AuthenticationController {
 
   login = async (req: Request<{}, {}, IUser, {}>, res: Response) => {
     const { email, password } = req.body;
-
     try {
       const token = await this.service.login(email, password);
       return res.status(200).json({
