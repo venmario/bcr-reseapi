@@ -168,7 +168,7 @@ carRoute.get(`/${prefix}/:id`, carController.getCar); // api get car by id
 carRoute.post(`/${prefix}`, carController.createCar); // api create new car
 /**
  * @openapi
- * /api/cars/{id}:
+ * /api/cars:
  *  patch:
  *    summary: Update a car
  *    description: Update a car
