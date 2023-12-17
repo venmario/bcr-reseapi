@@ -44,7 +44,7 @@ export class CarController {
       return res.status(200).json(result.data);
     }
     res.status(404).json({
-      message: "Car not found!",
+      message: "Car not found!"
     });
   };
 
@@ -54,7 +54,7 @@ export class CarController {
       ...req.body,
       specs: JSON.stringify(req.body.specs),
       options: JSON.stringify(req.body.options),
-      created_by: userId,
+      created_by: userId
     };
     const result = await errorWrapper(this.service.createCar(body as Cars));
     res.status(result.status).json(result.data);
@@ -63,12 +63,17 @@ export class CarController {
   updateCar = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     const carId = req.params.id;
+
+    if (req.body.specs) {
+      req.body.specs = JSON.stringify(req.body.specs);
+    }
+    if (req.body.options) {
+      req.body.options = JSON.stringify(req.body.options);
+    }
     const body = {
       ...req.body,
-      specs: JSON.stringify(req.body.specs),
-      options: JSON.stringify(req.body.options),
       updated_at: new Date(),
-      updated_by: userId,
+      updated_by: userId
     };
     const result = await errorWrapper(this.service.updateCar(carId, body));
     res.status(result.status).json(result.data);
@@ -79,7 +84,7 @@ export class CarController {
     const carId = req.params.id;
     const body = {
       deleted_at: new Date(),
-      deleted_by: Number(userId),
+      deleted_by: Number(userId)
     };
     const result = await errorWrapper(this.service.deleteCar(carId, body));
     res.status(result.status).json(result.data);

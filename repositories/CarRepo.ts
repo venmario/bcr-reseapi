@@ -24,23 +24,17 @@ export default class CarRepository {
   }
 
   async updateCar(id: string, body: Partial<Cars>) {
-    const car = await CarsModel.query()
+    const car = CarsModel.fromJson(body, { skipValidation: true });
+    return await CarsModel.query()
       .findById(id)
       .whereNull("deleted_at")
-      .update(body)
+      .update(car)
       .throwIfNotFound()
       .returning("*");
-
-    return car;
   }
 
-  async deleteCar(id: string, body: Partial<Cars>) {
-    const car = await CarsModel.query()
-      .findById(id)
-      .whereNull("deleted_at")
-      .throwIfNotFound()
-      .patch(body)
-      .returning("*");
+  async deleteCar(id: string) {
+    const car = await CarsModel.query().deleteById(id);
     return car;
   }
 }

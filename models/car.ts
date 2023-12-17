@@ -40,7 +40,7 @@ export class CarsModel extends ModelWithValidator {
         "type",
         "manufacture",
         "capacity",
-        "image",
+        "image"
       ],
       properties: {
         transmission: { type: "string", minLength: 1 },
@@ -50,8 +50,8 @@ export class CarsModel extends ModelWithValidator {
         manufacture: { type: "string", minLength: 1 },
         image: { type: "string" },
         year: { type: "number", minLength: 4 },
-        rentPerDay: { type: "number", minimum: 100_000 },
-      },
+        rentPerDay: { type: "number", minimum: 100_000 }
+      }
     };
   }
   static relationMapping = {
@@ -60,9 +60,9 @@ export class CarsModel extends ModelWithValidator {
       modelClass: User,
       join: {
         from: "cars.created_by",
-        to: "users.id",
-      },
-    },
+        to: "users.id"
+      }
+    }
   };
 
   $beforeInsert(): void | Promise<any> {

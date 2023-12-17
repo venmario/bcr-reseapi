@@ -23,10 +23,11 @@ export class CarService {
 
   async createCar(body: Cars) {
     if (body.image) {
+      const uploadedImage = await this.uploadImage(body.image);
       body = {
         ...body,
-        image: await this.uploadImage(body.image),
-        availableAt: setAvailableat(),
+        image: uploadedImage,
+        availableAt: setAvailableat()
       };
     } else {
       delete body.image;
@@ -35,27 +36,30 @@ export class CarService {
   }
 
   async updateCar(id: string, body: Partial<Cars>) {
-    body = {
-      ...body,
-      image: await this.uploadImage(body.image!),
-    };
+    if (body.image) {
+      body = {
+        ...body,
+        image: await this.uploadImage(body.image!)
+      };
+    }
     return await this.repository.updateCar(id, body);
   }
 
-  async deleteCar(id: string, body: Partial<Cars>) {
-    return await this.repository.deleteCar(id, body);
+  async deleteCar(id: string) {
+    return await this.repository.deleteCar(id);
   }
 
   async uploadImage(filePath: string): Promise<string> {
-    if (filePath) {
-      const options = {
-        use_filename: true,
-        unique_filename: false,
-        overwrite: true,
-      };
+    const options = {
+      use_filename: true,
+      unique_filename: false,
+      overwrite: true
+    };
+    try {
       const result = await cloudinary.uploader.upload(filePath, options);
-      return await result.secure_url.toString();
+      return result.secure_url.toString();
+    } catch (error) {
+      throw new Error((error as Error).message);
     }
-    return "";
   }
 }
