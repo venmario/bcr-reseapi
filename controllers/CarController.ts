@@ -80,13 +80,9 @@ export class CarController {
   };
 
   deleteCar = async (req: Request, res: Response) => {
-    const userId = req.user?.id;
+    // const userId = req.user?.id;
     const carId = req.params.id;
-    const body = {
-      deleted_at: new Date(),
-      deleted_by: Number(userId)
-    };
-    const result = await errorWrapper(this.service.deleteCar(carId, body));
+    const result = await errorWrapper(this.service.deleteCar(carId));
     res.status(result.status).json(result.data);
   };
 }
