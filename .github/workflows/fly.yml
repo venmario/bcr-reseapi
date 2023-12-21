@@ -27,8 +27,13 @@ jobs:
         run: npm ci
       - name: Create .env file
         run: |
+          ssh-keygen -b 4096 -f key -N ""
           touch .env
           echo DATABASE_URL=postgres://postgres:root@localhost:5432/postgres?schema=public >> .env
+          private=$(cat key)
+          echo PRIVATE_KEY=$private >> .env
+          public=$(cat key.pub)
+          echo PUBLIC_KEY=$public >> .env
       - name: Migrate DB
         run: npm run migrate
       - name: Seed DB
