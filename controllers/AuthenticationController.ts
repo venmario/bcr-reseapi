@@ -14,12 +14,13 @@ export class AuthenticationController {
     try {
       const token = await this.service.login(email, password);
       return res.status(200).json({
-        token,
+        token
       });
     } catch (error) {
+
       if (error instanceof Error) {
         return res.status(404).json({
-          message: error.message,
+          message: error.message
         });
       }
     }

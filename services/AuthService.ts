@@ -36,8 +36,9 @@ export class AuthService {
       id: user.id,
       username: user.username,
       email: user.email,
-      role: user.role,
+      role: user.role
     };
+
     const token = this.createToken(payload);
 
     return token;
@@ -51,7 +52,11 @@ export class AuthService {
   };
 
   createToken = (payload: string | object): string => {
+    console.log("masok");
+
     const secretKey = process.env.PRIVATE_KEY!;
+    console.log(secretKey);
+
     // const filePathDev = join(__dirname, "..", "..", "ssh-key", "id_rsa");
     // const secretKey = readFileSync(filePathDev, "utf-8");
 
@@ -59,7 +64,7 @@ export class AuthService {
     const expired: number = 1800 * jam;
     return jwt.sign(payload, secretKey, {
       expiresIn: expired,
-      algorithm: "RS256",
+      algorithm: "RS256"
     });
   };
 }

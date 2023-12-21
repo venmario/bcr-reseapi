@@ -12,7 +12,7 @@ export default async function (
   const { authorization } = req.headers;
   if (!authorization) {
     return res.status(401).json({
-      message: "Token not found!",
+      message: "Token not found!"
     });
   }
   try {
@@ -28,7 +28,7 @@ export default async function (
     next();
   } catch (error) {
     return res.status(401).json({
-      message: error,
+      message: (error as Error).message
     });
   }
 }
