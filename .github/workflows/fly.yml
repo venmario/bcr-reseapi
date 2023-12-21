@@ -27,12 +27,13 @@ jobs:
         run: npm ci
       - name: Create .env file
         run: |
-          ssh-keygen -b 4096 -f key -N ""
+          openssl genrsa -out rsa_4096_priv.pem 4096
+          openssl rsa -pubout -in rsa_4096_priv.pem -out rsa_4096_pub.pem
           touch .env
           echo DATABASE_URL=postgres://postgres:root@localhost:5432/postgres?schema=public >> .env
-          private=$(cat key)
+          private=$(cat rsa_4096_priv.pem)
           echo PRIVATE_KEY="$private" >> .env
-          public=$(cat key.pub)
+          public=$(cat rsa_4096_pub.pem)
           echo PUBLIC_KEY="$public" >> .env
       - name: Migrate DB
         run: npm run migrate

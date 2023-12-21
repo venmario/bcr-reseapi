@@ -52,10 +52,7 @@ export class AuthService {
   };
 
   createToken = (payload: string | object): string => {
-    console.log("masok");
-
     const secretKey = process.env.PRIVATE_KEY!;
-    console.log(secretKey);
 
     // const filePathDev = join(__dirname, "..", "..", "ssh-key", "id_rsa");
     // const secretKey = readFileSync(filePathDev, "utf-8");
