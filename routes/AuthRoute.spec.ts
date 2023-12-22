@@ -6,11 +6,11 @@ describe("test auth API:/login", () => {
   it("should success on login", async () => {
     const response = await supertest(app).post("/login").send({
       email: "superadmin@gmail.com",
-      password: "superadmin",
+      password: "superadmin"
     });
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
-      token: expect.any(String),
+      token: expect.any(String)
     });
     token = response.body.token;
   });
@@ -18,7 +18,7 @@ describe("test auth API:/login", () => {
   it("should be not found password", async () => {
     const response = await supertest(app).post("/login").send({
       email: "superadmin@gmail.com",
-      password: "",
+      password: ""
     });
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Empty Password");
@@ -26,7 +26,7 @@ describe("test auth API:/login", () => {
   it("should be not found user1", async () => {
     const response = await supertest(app).post("/login").send({
       email: "ngawor@gmail.com",
-      password: "alk;sndf",
+      password: "alk;sndf"
     });
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("User not found!");
@@ -34,7 +34,7 @@ describe("test auth API:/login", () => {
   it("should be not found user2", async () => {
     const response = await supertest(app).post("/login").send({
       email: "superadmin@gmail.com",
-      password: "alk;sndf",
+      password: "alk;sndf"
     });
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("User not found!");
@@ -42,10 +42,24 @@ describe("test auth API:/login", () => {
   it("should be not found user3", async () => {
     const response = await supertest(app).post("/login").send({
       email: "",
-      password: "",
+      password: ""
     });
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("User not found!");
+  });
+
+  it("should error", async () => {
+    const response = await supertest(app).post("/login").send({
+      password: ""
+    });
+    expect(response.status).toBe(404);
+  });
+
+  it("should error 401", async () => {
+    const response = await supertest(app)
+      .get("/protected")
+      .set("Authorization", `Bearer${token}`);
+    expect(response.status).toBe(401);
   });
 
   it("should be not found token", async () => {

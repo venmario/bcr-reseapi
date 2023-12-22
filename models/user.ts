@@ -12,10 +12,6 @@ export class User extends ModelWithValidator {
     return "users";
   }
 
-  static get idColumn() {
-    return "id";
-  }
-
   static get jsonSchema() {
     return {
       type: "object",
@@ -25,8 +21,8 @@ export class User extends ModelWithValidator {
         id: { type: "integer" },
         username: { type: "string", minLength: 1, maxLength: 255 },
         password: { type: "string", minLength: 1, maxLength: 255 },
-        role: { type: "string", minLength: 3, maxLength: 30 },
-      },
+        role: { type: "string", minLength: 3, maxLength: 30 }
+      }
     };
   }
 
@@ -36,9 +32,9 @@ export class User extends ModelWithValidator {
       modelClass: CarsModel,
       join: {
         from: "users.id",
-        to: "cars.created_by",
-      },
-    },
+        to: "cars.created_by"
+      }
+    }
   };
 }
 

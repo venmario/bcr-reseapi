@@ -17,6 +17,14 @@ describe("test auth API:/cars", () => {
     expect(response.body).toMatchObject({ message: "Token not found!" });
   });
 
+  it("should get filtered cars", async () => {
+    const response = await supertest(app).get(
+      "/cars?driver=true&tanggal=2023-12-31&waktu=10&jumlah="
+    );
+    expect(response.status).toBe(200);
+    expectTypeOf<Cars[]>().toMatchTypeOf<Cars[]>();
+  });
+
   it("should get all cars", async () => {
     const response = await supertest(app)
       .get("/api/cars")
@@ -88,6 +96,15 @@ describe("test auth API:/cars", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject(newCar);
+  });
+
+  it("should not get any car", async () => {
+    const response = await supertest(app)
+      .get(`/api/cars/blablabla`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Car not found!");
   });
 
   const updatedCar = {

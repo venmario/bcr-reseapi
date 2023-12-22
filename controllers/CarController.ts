@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Cars } from "../models/car";
+import { Cars, CarsModel } from "../models/car";
 import { ValidationError } from "objection";
 import { CarService } from "../services/CarService";
 import { errorWrapper } from "../utils/error-wrapper";
@@ -40,7 +40,7 @@ export class CarController {
 
   getCar = async (req: Request, res: Response) => {
     const result = await errorWrapper(this.service.getCar(req.params.id));
-    if (result.data) {
+    if (result.data instanceof CarsModel) {
       return res.status(200).json(result.data);
     }
     res.status(404).json({
