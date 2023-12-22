@@ -1,6 +1,4 @@
 import jwt from "jsonwebtoken";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import bcrypt from "bcryptjs";
 import { AuthRepository } from "../repositories/AuthRepo";
 
@@ -53,10 +51,6 @@ export class AuthService {
 
   createToken = (payload: string | object): string => {
     const secretKey = process.env.PRIVATE_KEY!;
-
-    // const filePathDev = join(__dirname, "..", "..", "ssh-key", "id_rsa");
-    // const secretKey = readFileSync(filePathDev, "utf-8");
-
     const jam: number = 1;
     const expired: number = 1800 * jam;
     return jwt.sign(payload, secretKey, {

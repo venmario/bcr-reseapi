@@ -18,10 +18,6 @@ export default async function (
   try {
     const token = authorization.split(" ")[1];
     const secret = process.env.PUBLIC_KEY!;
-    // const secret = readFileSync(
-    //   join(__dirname, "..", "..", "ssh-key", "id_rsa.pub"),
-    //   "utf-8"
-    // );
 
     const tokenPayload = jwt.verify(token, secret);
     req.user = tokenPayload as IUser;
