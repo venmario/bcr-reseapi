@@ -2,6 +2,8 @@ import { Cars } from "../models/car";
 import CarRepository from "../repositories/CarRepo";
 import { v2 as cloudinary } from "cloudinary";
 import { setAvailableat } from "../utils/availableAt";
+import { extractPublicId } from "cloudinary-build-url";
+
 export class CarService {
   private repository: CarRepository;
 
@@ -46,7 +48,13 @@ export class CarService {
   }
 
   async deleteCar(id: string) {
-    return await this.repository.deleteCar(id);
+    const car = await this.getCar(id);
+    const deletedCar = this.repository.deleteCar(id);
+    if (car?.image) {
+      const imgUrl = car.image;
+      await this.deleteImage(imgUrl);
+    }
+    return deletedCar;
   }
 
   async uploadImage(filePath: string): Promise<string> {
@@ -58,6 +66,18 @@ export class CarService {
     try {
       const result = await cloudinary.uploader.upload(filePath, options);
       return result.secure_url.toString();
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  }
+
+  async deleteImage(cloudinaryUrl: string): Promise<void> {
+    try {
+      const publicId = extractPublicId(cloudinaryUrl);
+      await cloudinary.api.delete_resources([publicId], {
+        type: "upload",
+        resource_type: "image"
+      });
     } catch (error) {
       throw new Error((error as Error).message);
     }
