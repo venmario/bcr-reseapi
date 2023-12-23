@@ -14,7 +14,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.repository.findUserByEmail(email);
+    const user = await this.findUserByEmail(email);
 
     if (!user) {
       throw new Error("User not found!");

@@ -14,7 +14,10 @@ export default class CarRepository {
   }
 
   async getCar(id: string) {
-    const cars = await CarsModel.query().findById(id).whereNull("deleted_at");
+    const cars = await CarsModel.query()
+      .findById(id)
+      .whereNull("deleted_at")
+      .throwIfNotFound();
     return cars;
   }
 

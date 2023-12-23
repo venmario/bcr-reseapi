@@ -39,6 +39,10 @@ export class CarService {
 
   async updateCar(id: string, body: Partial<Cars>) {
     if (body.image) {
+      const car = await this.repository.getCar(id);
+      if (car?.image) {
+        this.deleteImage(car?.image!);
+      }
       body = {
         ...body,
         image: await this.uploadImage(body.image!)
@@ -72,14 +76,10 @@ export class CarService {
   }
 
   async deleteImage(cloudinaryUrl: string): Promise<void> {
-    try {
-      const publicId = extractPublicId(cloudinaryUrl);
-      await cloudinary.api.delete_resources([publicId], {
-        type: "upload",
-        resource_type: "image"
-      });
-    } catch (error) {
-      throw new Error((error as Error).message);
-    }
+    const publicId = extractPublicId(cloudinaryUrl);
+    await cloudinary.api.delete_resources([publicId], {
+      type: "upload",
+      resource_type: "image"
+    });
   }
 }

@@ -4,6 +4,8 @@ import supertest from "supertest";
 import app from "../app";
 import { Cars } from "../models/car";
 import { join } from "path";
+import { as } from "vitest/dist/reporters-OH1c16Kq";
+import { errorWrapper, to } from "../utils/error-wrapper";
 
 describe("test auth API:/cars", () => {
   let token = "";
@@ -19,7 +21,15 @@ describe("test auth API:/cars", () => {
 
   it("should get filtered cars", async () => {
     const response = await supertest(app).get(
-      "/cars?driver=true&tanggal=2023-12-31&waktu=10&jumlah="
+      "/cars?driver=true&tanggal=2023-12-31&waktu=10"
+    );
+    expect(response.status).toBe(200);
+    expectTypeOf<Cars[]>().toMatchTypeOf<Cars[]>();
+  });
+
+  it("should get filtered cars with capacity 4 or more", async () => {
+    const response = await supertest(app).get(
+      "/cars?driver=true&tanggal=2023-12-31&waktu=10&jumlah=4"
     );
     expect(response.status).toBe(200);
     expectTypeOf<Cars[]>().toMatchTypeOf<Cars[]>();
@@ -35,6 +45,16 @@ describe("test auth API:/cars", () => {
 
   const imagePath = join(__dirname, "..", "public", "images", "car01.min.jpg");
   const base64image = `data:image/jpeg;base64,${toBase64(imagePath)}`;
+  const updateImagePath = join(
+    __dirname,
+    "..",
+    "public",
+    "images",
+    "car02.min.jpg"
+  );
+  const base64UpdateImage = `data:image/jpeg;base64,${toBase64(
+    updateImagePath
+  )}`;
 
   const dataCar = {
     "plate": "TEST",
@@ -89,6 +109,15 @@ describe("test auth API:/cars", () => {
     });
   });
 
+  it("should failed to create a new car", async () => {
+    const response = await supertest(app)
+      .post("/api/cars")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...dataCar, image: "" });
+    expect(response.status).toBe(400);
+    expect(response.body).toBe("image: must have required property 'image'");
+  });
+
   it("should be get the new car", async () => {
     const response = await supertest(app)
       .get(`/api/cars/${newCar.id}`)
@@ -100,15 +129,17 @@ describe("test auth API:/cars", () => {
 
   it("should not get any car", async () => {
     const response = await supertest(app)
-      .get(`/api/cars/blablabla`)
+      .get(`/api/cars/bbbc6793-3245-458e-93ac-e445f51ef1fd`)
       .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(404);
-    expect(response.body.message).toBe("Car not found!");
+    expect(response.body).toBe("NotFoundError");
   });
 
   const updatedCar = {
-    "plate": "Updated Test"
+    "plate": "Updated Test",
+    "specs": ["spec1", "spec2"],
+    "options": ["opt1", "opt2"]
   };
 
   it("should update the new car", async () => {
@@ -119,7 +150,7 @@ describe("test auth API:/cars", () => {
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
       ...newCar,
-      plate: updatedCar.plate,
+      ...updatedCar,
       updated_at: expect.any(String),
       updated_by: expect.any(Number)
     });
@@ -132,10 +163,30 @@ describe("test auth API:/cars", () => {
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
       ...newCar,
-      plate: updatedCar.plate,
+      ...updatedCar,
       updated_at: expect.any(String),
       updated_by: expect.any(Number)
     });
+  });
+
+  it("should update new car image", async () => {
+    const response = await supertest(app)
+      .patch(`/api/cars/${newCar.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ image: base64UpdateImage });
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      image: expect.any(String)
+    });
+  });
+
+  it("should error when update the car with wrong imagepath", async () => {
+    const response = await supertest(app)
+      .patch(`/api/cars/${newCar.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ image: "http://ngawor.com" });
+    expect(response.body).toMatch("Resource not found");
+    expect(response.status).toBe(500);
   });
 
   it("should delete the new car", async () => {
@@ -144,5 +195,17 @@ describe("test auth API:/cars", () => {
       .set("Authorization", `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toBe(1);
+  });
+
+  it("should error from errorWrapper", async () => {
+    const errorExt = { testError: "testError" };
+    const error = new Error("Generic error");
+    const result = await errorWrapper(to(Promise.reject(error), errorExt));
+    expect(result.data).toMatchObject([
+      {
+        testError: "testError"
+      },
+      undefined
+    ]);
   });
 });
